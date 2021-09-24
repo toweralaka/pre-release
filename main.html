@@ -198,7 +198,7 @@ introTl.to(".intro-section",
     duration:15,
     ease:"bounce",
   }, "<")
-introTl.to(".meditate-section",
+introTl.to(".meditate-wrapper",
       {backgroundColor: "transparent"}
     );
 introTl.to(".meditate-section",
@@ -210,7 +210,9 @@ introTl.to(".moon-section",
 introTl.to(".meditate-section",
       { duration: 120.0,yPercent: -100}
     );
-    
+introTl.from('.full-moon-text1', {
+    yPercent:50, duration:120
+  },"<")  
 introTl.to(".meditate-section",
       { duration: 120.0,opacity: 0, visibility:"hidden"}, "<"
     );
@@ -220,10 +222,7 @@ introTl.to(".meditate-section",
  introTl.to(".moon-section",
       { duration: 120.0,opacity: 1}
     , "<");
-  introTl.from('.full-moon-text1', {
-    yPercent:50, duration:120
-  },"<")
-  
+    
   introTl.from('.full-moon1', 
   {duration:125, delay:50, opacity:0})
   introTl.to('.moon-text-one', 
@@ -261,11 +260,11 @@ introTl.to(".meditate-section",
     rotation: "270_ccw", duration:125 }, "<");
   introTl.fromTo('.tomorrow', {opacity:0},{opacity:1, duration:60}, "<")
   introTl.fromTo('.today', {opacity:1},{opacity:0, duration:60})
-  introTl.fromTo('.tomorrow-text', {yPercent:100},{yPercent: -150})
+  introTl.fromTo('.tomorrow-text', {yPercent:100},{yPercent: -100})
   // introTl.to('.tomorrow-text', {opacity:0, visibility: "hidden"})
   introTl.to('.side-circle', {
     backgroundColor: "transparent",
-    boxShadow: "0 0 0 0 transparent", duration:10
+    boxShadow: "0 0 0 0 transparent"
   })
   introTl.to('.today-section-wrap', {backgroundColor: "transparent"})
   introTl.to('.today-section-wrap', {yPercent: -100, duration:120})
@@ -377,9 +376,9 @@ introTl.from('#pdt1', {
   duration:360,
   // ease: Power1.easeOut
 })
-introTl.from('#actn-btn-1', {
+introTl.fromTo('#actn-btn-1', {
   opacity:0
-})
+}, {opacity:1, x:200})
 introTl.to('#pdt1', {
   yPercent: -20,
   scale: 2,
@@ -412,7 +411,7 @@ introTl.to('.phone-section', {
 }, "<")
 
 introTl.to('#pdt2', {
-  yPercent:-100, duration:360,
+  yPercent:-150, duration:360,
   scale: 0.4
 })
 introTl.from('.phone-wrap', {
@@ -427,9 +426,12 @@ introTl.from('.phone-text', {
 introTl.to('.phone-sphere, .phone-pdt-wrap', {
 yPercent:-100
 })
-introTl.to('#actn-btn-2, #acc-btn3', {
-  xPercent:100, duration:120
+introTl.to('#actn-btn-2', {
+  x:0, duration:120
 }, "<")
+// introTl.to('#actn-btn-2, #acc-btn3', {
+//   x:100, duration:120
+// }, "<")
 introTl.to('.phone-section', {
   opacity: 0.5
 }, "<")
