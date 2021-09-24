@@ -202,7 +202,7 @@ introTl.to(".meditate-wrapper",
       {backgroundColor: "transparent"}
     );
 introTl.to(".meditate-section",
-      {opacity: 0.5,}, "<"
+      {opacity: 0.5,}
     );
 introTl.to(".moon-section",
       {opacity: 0.5}
@@ -214,7 +214,7 @@ introTl.from('.full-moon-text1', {
     yPercent:50, duration:120
   },"<")  
 introTl.to(".meditate-section",
-      { duration: 120.0,opacity: 0, visibility:"hidden"}, "<"
+      { duration: 120.0,opacity: 0, visibility:"hidden"}
     );
 
 //MOON SECTION
@@ -321,12 +321,12 @@ var Cont={val:0}; //, NewVal = 100 ;
 introTl.to(Cont,{
   duration:60,
   val:newValOne,roundProps:"val",onUpdate:function(){
-  document.getElementById("globe-count-1").innerHTML=Math.floor(Cont.val)
+  document.getElementById("globe-count-1").innerHTML=Cont.val
 }});
 introTl.to(Cont,{
   duration:60,
   val:newValTwo,roundProps:"val",onUpdate:function(){
-  document.getElementById("globe-count-2").innerHTML=Math.floor(Cont.val)
+  document.getElementById("globe-count-2").innerHTML=Cont.val
 }}, "<1");
 //child1 count
 introTl.from('.continent', {
@@ -378,7 +378,7 @@ introTl.from('#pdt1', {
 })
 introTl.fromTo('#actn-btn-1', {
   opacity:0
-}, {opacity:1, x:200})
+}, {opacity:1, x:250})
 introTl.to('#pdt1', {
   yPercent: -20,
   scale: 2,
@@ -409,7 +409,9 @@ introTl.to('.product-section', {
 introTl.to('.phone-section', {
   opacity: 1,
 }, "<")
-
+introTl.to('#actn-btn-2', {
+  x:250
+}, "<")
 introTl.to('#pdt2', {
   yPercent:-150, duration:360,
   scale: 0.4
