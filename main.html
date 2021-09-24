@@ -414,10 +414,10 @@ introTl.to('#actn-btn-2', {
 }, "<")
 introTl.to('#pdt2', {
   yPercent:-150, duration:360,
-  scale: 0.4
+  scale: 0.4, opacity:0
 })
 introTl.from('.phone-wrap', {
-  x:-500, duration:120
+  x:-500, opacity:0, duration:120
 }, "<120")
 introTl.from('.phone-sphere', {
   background:"none"
@@ -441,6 +441,9 @@ introTl.to('.phone-section', {
 //SIGNUP SECTION
 introTl.to('#form-section', {
   opacity: 0.5
+}, "<")
+introTl.from('#actn-btn-3', {
+  opacity:0
 }, "<")
 introTl.from('.form-product', {
   scale: 0, duration:120
