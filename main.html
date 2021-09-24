@@ -5,6 +5,18 @@
 const panels = gsap.utils.toArray(".panel-section");
 gsap.set(panels, {zIndex: (i, target, targets) => targets.length - i});
 
+//SKIP INTRO
+
+$('#skip').on("click", function(){ 
+  gsap.to(window, {
+      scrollTo:"#story",
+      ease:Power3.easeOut 
+   });
+
+return false;
+});  
+
+
 //INTRODUCTION SECTION PARTICLES
 // Create temp variable to extract RGB values for scene
 let tempColor = new THREE.Color().setHex( 0x1d2732 )
@@ -301,12 +313,12 @@ introTl.from('.purple-ring', {
   yPercent:100,
   duration: 120
  }, "<")
-//  introTl.from(".globe-surround-text", {
-//   duration: 120,
-//   attr: { startOffset: "0%" },
-//   opacity: 0,
-//   // ease: "power1.inOut"
-// }, "<");
+ introTl.from(".globe-surround-text", {
+  duration: 120,
+  attr: { startOffset: "0%" },
+  opacity: 0,
+  // ease: "power1.inOut"
+}, "<");
 introTl.from('.left-ring-text, .right-ring-text', {
   opacity: 0,
 })
@@ -423,7 +435,7 @@ introTl.from('.phone-sphere', {
   background:"none"
 }, "<1")
 introTl.from('.phone-text', {
-  opacity:0//, onComplete: startScroll
+  opacity:0, onComplete: startScroll
 }, "<1")
 introTl.to('.phone-sphere, .phone-pdt-wrap', {
 yPercent:-100
