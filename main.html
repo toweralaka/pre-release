@@ -132,6 +132,60 @@ let particle_anim = gsap.timeline()
 let points = gsap.utils.toArray(".panel-section");
 let height = 100 * points.length;
 
+  // //PHONE On SCROLL
+
+  const screenCanvas = document.getElementById("phone-div");
+const screenContext = screenCanvas.getContext("2d");
+screenCanvas.width = 1920;
+screenCanvas.height = 1080;
+const screenCount = 628;
+const currentScreen = index => (
+  `phones/phone and screen_${(index).toString().padStart(5, '0')}.png`
+);
+const screenImages = []
+const allScreens = {
+  frame: 0
+};
+
+for (let i = 0; i < screenCount; i++) {
+  const img = new Image();
+  img.src = currentScreen(i);
+  screenImages.push(img);
+}
+let phoneScroll = gsap.timeline({
+  scrollTrigger: {
+    trigger:".phone-section",
+    start: "top top",
+    scrub: true,//move in line with scroll
+    pin: true
+    
+  },
+})
+phoneScroll.to(allScreens, {
+  frame: screenCount-1,
+  snap: "frame",
+  duration:60,
+  delay:120,
+  onUpdate: renderScreen
+});
+screenImages[0].onload = renderScreen;
+function renderScreen() {
+  screenContext.clearRect(0,0,screenCanvas.width, screenCanvas.height);
+  screenContext.drawImage(screenImages[allScreens.frame], 0, 0, screenImages[allScreens.frame].width,    screenImages[allScreens.frame].height,     // source rectangle
+    0, 0, screenCanvas.width, screenCanvas.height); // destination rectangle
+}
+phoneScroll.pause()
+function startScroll(){
+  phoneScroll.restart()
+}
+function pauseScroll(){
+  phoneScroll.pause()
+}
+function resumeScroll(){
+  phoneScroll.resume()
+}
+
+
 //INTRODUCTION ON SCROLL
 let paras = gsap.utils.toArray('.introtext')
 let introTl = gsap.timeline({
@@ -147,6 +201,9 @@ let introTl = gsap.timeline({
   }
   
 })
+
+//INTRO SECTION
+
 introTl.to('.introtext',
   {opacity:1, duration:0.1}
 )
@@ -474,57 +531,5 @@ introTl.from('.action-form', {
 
 
 
-  // //PHONE On SCROLL
-
-const screenCanvas = document.getElementById("phone-div");
-const screenContext = screenCanvas.getContext("2d");
-screenCanvas.width = 1920;
-screenCanvas.height = 1080;
-const screenCount = 628;
-const currentScreen = index => (
-  `phones/phone and screen_${(index).toString().padStart(5, '0')}.png`
-);
-const screenImages = []
-const allScreens = {
-  frame: 0
-};
-
-for (let i = 0; i < screenCount; i++) {
-  const img = new Image();
-  img.src = currentScreen(i);
-  screenImages.push(img);
-}
-let phoneScroll = gsap.timeline({
-  scrollTrigger: {
-    trigger:".phone-section",
-    start: "top top",
-    scrub: true,//move in line with scroll
-    pin: true
-    
-  },
-})
-phoneScroll.to(allScreens, {
-  frame: screenCount-1,
-  snap: "frame",
-  duration:60,
-  delay:120,
-  onUpdate: renderScreen
-});
-screenImages[0].onload = renderScreen;
-function renderScreen() {
-  screenContext.clearRect(0,0,screenCanvas.width, screenCanvas.height);
-  screenContext.drawImage(screenImages[allScreens.frame], 0, 0, screenImages[allScreens.frame].width,    screenImages[allScreens.frame].height,     // source rectangle
-    0, 0, screenCanvas.width, screenCanvas.height); // destination rectangle
-}
-phoneScroll.pause()
-function startScroll(){
-  phoneScroll.restart()
-}
-function pauseScroll(){
-  phoneScroll.pause()
-}
-function resumeScroll(){
-  phoneScroll.resume()
-}
 
 </script>
