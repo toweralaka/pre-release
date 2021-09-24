@@ -199,14 +199,20 @@ introTl.to(".intro-section",
     ease:"bounce",
   }, "<")
 introTl.to(".meditate-section",
-      { duration: 120.0,backgroundColor: "transparent"}
+      {backgroundColor: "transparent"}
     );
 introTl.to(".meditate-section",
-      { duration: 120.0,yPercent: -100}, "<2"
+      {opacity: 0.5,}, "<"
+    );
+introTl.to(".moon-section",
+      {opacity: 0.5}
+    , "<");
+introTl.to(".meditate-section",
+      { duration: 120.0,yPercent: -100}
     );
     
 introTl.to(".meditate-section",
-      { duration: 120.0,opacity: 0}
+      { duration: 120.0,opacity: 0, visibility:"hidden"}, "<"
     );
 
 //MOON SECTION
@@ -255,9 +261,10 @@ introTl.to(".meditate-section",
     rotation: "270_ccw", duration:125 }, "<");
   introTl.fromTo('.tomorrow', {opacity:0},{opacity:1, duration:60}, "<")
   introTl.fromTo('.today', {opacity:1},{opacity:0, duration:60})
-  introTl.to('.tomorrow-text', {yPercent: -150})
-  introTl.to('.tomorrow-text', {opacity:0, visibility: "hidden"})
+  introTl.fromTo('.tomorrow-text', {yPercent:100},{yPercent: -150})
+  // introTl.to('.tomorrow-text', {opacity:0, visibility: "hidden"})
   introTl.to('.side-circle', {
+    backgroundColor: "transparent",
     boxShadow: "0 0 0 0 transparent", duration:10
   })
   introTl.to('.today-section-wrap', {backgroundColor: "transparent"})
@@ -270,7 +277,7 @@ introTl.to(".meditate-section",
   // introTl.to('.globe-section', {visibility: "hidden", duration:30})
   introTl.from('.globe', {
     scale: 0,
-    yPercent:-150,
+    yPercent:-120,
     duration: 120
     })
   globeTurn = gsap.fromTo('.globe', {
@@ -312,18 +319,15 @@ let newValOne = document.getElementById('globe-count-1').innerHTML;
 let newValTwo = document.getElementById('globe-count-2').innerHTML;
 var Cont={val:0}; //, NewVal = 100 ;
 
-// TweenLite.to(Cont,5,{val:NewVal,roundProps:"val",onUpdate:function(){
-//   document.getElementById("counter").innerHTML=Cont.val
-// }});
 introTl.to(Cont,{
   duration:60,
   val:newValOne,roundProps:"val",onUpdate:function(){
-  document.getElementById("globe-count-1").innerHTML=Cont.val
+  document.getElementById("globe-count-1").innerHTML=Math.floor(Cont.val)
 }});
 introTl.to(Cont,{
   duration:60,
   val:newValTwo,roundProps:"val",onUpdate:function(){
-  document.getElementById("globe-count-2").innerHTML=Cont.val
+  document.getElementById("globe-count-2").innerHTML=Math.floor(Cont.val)
 }}, "<1");
 //child1 count
 introTl.from('.continent', {
@@ -356,20 +360,19 @@ introTl.to('.globe-section-wrap', {
   duration: 120,
 })
 introTl.to('.globe-section', {
-  opacity: 0, visibility:"hidden"
+  opacity: 0, visibility:"hidden", duration:60
 })
 introTl.to('.product-section', {
-  opacity: 1
-})
+  opacity: 1, duration:60
+}, "<")
 introTl.to('.container', {
   backgroundColor: "transparent"
-})
+}, "<")
 
 
 // //WATCH SECTION
 
 introTl.from('#pdt1', {
-  yPercent: 50,
   scale: 0.7,
   duration:360,
   // ease: Power1.easeOut
@@ -378,10 +381,9 @@ introTl.from('#actn-btn-1', {
   opacity:0
 })
 introTl.to('#pdt1', {
-  yPercent: -50,
-  scale: 2.5,
+  yPercent: -20,
+  scale: 2,
   duration:360,
-  // ease: Power1.easeOut
 }, "<")
 
 introTl.from('.product-sphere', {
@@ -396,7 +398,7 @@ introTl.to('#pdt1', {
 
 introTl.from('.pdt-text', {
   opacity: 0,
-  duration:30,
+  duration:120,
 })
 introTl.to('.product-section', {
   opacity: 0,
@@ -410,8 +412,8 @@ introTl.to('.phone-section', {
 }, "<")
 
 introTl.to('#pdt2', {
-  yPercent:-80, duration:360,
-  scale: 0.7
+  yPercent:-100, duration:360,
+  scale: 0.4
 })
 introTl.from('.phone-wrap', {
   x:-500, duration:120
@@ -426,7 +428,7 @@ introTl.to('.phone-sphere, .phone-pdt-wrap', {
 yPercent:-100
 })
 introTl.to('#actn-btn-2, #acc-btn3', {
-  xPercent:50
+  xPercent:100, duration:120
 }, "<")
 introTl.to('.phone-section', {
   opacity: 0.5
