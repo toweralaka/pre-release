@@ -1,539 +1,600 @@
-
-
 <script>
-//SET Z-INDEX OF PANELS
-const panels = gsap.utils.toArray(".panel-section");
-gsap.set(panels, {zIndex: (i, target, targets) => targets.length - i});
-
-//SKIP INTRO
-
-$('#skip').on("click", function(){ 
-  gsap.to(window, {
-      scrollTo:"#story",
-      ease:Power3.easeOut 
-   });
-
-return false;
-});  
-
-
-//INTRODUCTION SECTION PARTICLES
-// Create temp variable to extract RGB values for scene
-let tempColor = new THREE.Color().setHex( 0x1d2732 )
-let scene, camera, renderer, stars, starGeo;
-let introSec = document.getElementById('particles-js');
-function init() {
-
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0x0D1318 );
-  //check screen size
-  camera = new THREE.PerspectiveCamera(60,window.innerWidth / window.innerHeight, 1, 1000);
-  camera.position.z = 1;
-  camera.rotation.x = Math.PI/2;
-
-  renderer = new THREE.WebGLRenderer();
-  renderer.setClearColor( 0xffffff, 0);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  introSec.appendChild(renderer.domElement);
-
-
-  starGeo = new THREE.Geometry();
-  for(let i=0;i<6000;i++) {
-    star = new THREE.Vector3(
-      Math.random() * 600 - 300,
-      Math.random() * 600 - 300,
-      Math.random() * 600 - 300
-    );
-    star.velocity = 0;
-    //make acceleration zero to control particle movement
-    star.acceleration = 0;
-    starGeo.vertices.push(star);
-  }
-  let sprite = new THREE.TextureLoader().load( 'https://uploads-ssl.webflow.com/614716810b4f493df1dcfca4/61474f91d12a71efed96e0df_star.png' );
-  let starMaterial = new THREE.PointsMaterial({
-    color: 0xaaaaaa,
-    size: 2,
-    map: sprite,
-    sizeAttenuation: false
-  });
-
-  stars = new THREE.Points(starGeo,starMaterial);
-  scene.add(stars);
-
-  window.addEventListener("resize", onWindowResize, false);
-
-  animate(); 
-}
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+  //SET Z-INDEX OF PANELS
+  const panels = gsap.utils.toArray(".panel-section");
+  gsap.set(panels, {zIndex: (i, target, targets) => targets.length - i});
+  
+  //SKIP INTRO
+  
+  $('#skip').on("click", function(){ 
+    gsap.to(window, {
+        scrollTo:"#story",
+        ease:Power3.easeOut 
+     });
+  
+  return false;
+  });  
+  
+  //READ MORE TOGGLE
+  //<script src="/path/to/cdn/jquery.slim.min.js">
+  //<script src="/path/to/js/showmoreless.min.js">
+  // $(function(){
+  //   $('.show-less-div').myOwnLineShowMoreLess({
+  //     showLessLine: 2,
+  //     showLessText:'Show Less',
+  //     showMoreText:'Read More'
+  
+  //   });
+  // })
+  
+  //INTRODUCTION SECTION PARTICLES
+  // Create temp variable to extract RGB values for scene
+  let tempColor = new THREE.Color().setHex( 0x1d2732 )
+  let scene, camera, renderer, stars, starGeo;
+  let introSec = document.getElementById('particles-js');
+  function init() {
+  
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0x0D1318 );
+    //check screen size
+    camera = new THREE.PerspectiveCamera(60,window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.z = 1;
+    camera.rotation.x = Math.PI/2;
+  
+    renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor( 0xffffff, 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-function animate() {
-  starGeo.vertices.forEach(p => {
-    p.velocity += p.acceleration
-    p.y -= p.velocity;
-    
-    if (p.y < -200) {
-      p.y = 200;
-      p.velocity = 0;
+    introSec.appendChild(renderer.domElement);
+  
+  
+    starGeo = new THREE.Geometry();
+    for(let i=0;i<6000;i++) {
+      star = new THREE.Vector3(
+        Math.random() * 600 - 300,
+        Math.random() * 600 - 300,
+        Math.random() * 600 - 300
+      );
+      star.velocity = 0;
+      //make acceleration zero to control particle movement
+      star.acceleration = 0;
+      starGeo.vertices.push(star);
     }
-  });
-  starGeo.verticesNeedUpdate = true;
-  // stars.rotation.y +=0.002;
-
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-}
-
-init();
-
-function namePage(pg, col='') {
-  let sections = document.querySelector(pg)
-  let thePage = sections.dataset.page;
-  let colorOrder, newIndex;
-  if(thePage == undefined){
-    pageTitle.innerHTML = ''
-  }else{
-    pageTitle.innerHTML = thePage
+    let sprite = new THREE.TextureLoader().load( 'images/star.png' );
+    let starMaterial = new THREE.PointsMaterial({
+      color: 0xaaaaaa,
+      size: 2,
+      map: sprite,
+      sizeAttenuation: false
+    });
+  
+    stars = new THREE.Points(starGeo,starMaterial);
+    scene.add(stars);
+  
+    window.addEventListener("resize", onWindowResize, false);
+  
+    animate(); 
   }
-  //reset color array
-  if(col==''){
-    colorOrder = [...colorPatch]
-  }else{
-    newIndex = colorPatch.indexOf(col)
-    colorOrder = [...colorPatch.slice(newIndex), ...colorPatch.slice(0, newIndex)]
-  }
-  //rotate menu
-  for(let i=0; i<menuList.length-1; i++) {
-    menuList[i].style.borderTopColor = colorOrder[i]
-  };
-}
-
-//register gsap scroll plugin
-gsap.registerPlugin(ScrollTrigger);
-gsap.registerPlugin(TextPlugin);
-gsap.registerPlugin(CSSPlugin);
-
-ScrollTrigger.defaults({
-  ease: Power1.easeOut
-
-});
-
-//PARTICLES ON SCROLL  
-let particle_anim = gsap.timeline()
-  particle_anim.to(starGeo.vertices, {
-  y: 50,
-    ease: "power1.inOut", scrollTrigger: {    
-    trigger: ".intro-section",
-    scrub: true,
-  }})
- 
-let points = gsap.utils.toArray(".panel-section");
-let height = 100 * points.length;
-
-
-
-//INTRODUCTION ON SCROLL
-let paras = gsap.utils.toArray('.introtext')
-let introTl = gsap.timeline({
-  scrollTrigger: {
-    trigger:".container",
-    start: "top top",
-    scrub: 2,//move 10s afetr scroll
-    pin: true,
-    end: "+=" + height + "%",
-    // pinSpacing: false,
-    //onEnter: () => namePage('.intro-section', '#5c5cf2'),
-    //onEnterBack: () => namePage('.intro-section', '#5c5cf2'),
+  function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+  function animate() {
+    starGeo.vertices.forEach(p => {
+      p.velocity += p.acceleration
+      p.y -= p.velocity;
+      
+      if (p.y < -200) {
+        p.y = 200;
+        p.velocity = 0;
+      }
+    });
+    starGeo.verticesNeedUpdate = true;
+    // stars.rotation.y +=0.002;
+  
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
   }
   
-})
-
-//INTRO SECTION
-
-introTl.to('.introtext',
-  {opacity:1, duration:0.1}
-)
-for(let i=0; i<paras.length; i++){
-  introTl.from(paras[i],{
-    scale:0,     
-    duration:400,
-    delay:2
-  })
-  introTl.to(paras[i],{
-     scale:0.9,
-     duration:50,
-   })
-  introTl.to(paras[i],{
-    opacity:0,
-    duration:10,
-  })
-}
-introTl.to(scene.background, {
-  r: tempColor.r, g: tempColor.g, b: tempColor.b }, "-=550");
-introTl.to(".intro-section",
-      { duration: 10.0,opacity: 0, visibility:"hidden"}, "<"
-    );
- introTl.to(".meditate-section",
-      { duration: 10.0,opacity: 1}
-    , "<");
-
-//MEDITATE SECTION
-  introTl.from('.meditate-text', {yPercent: 50,
-    opacity:0.6,
-    duration:125,
-  }, "<")
-  introTl.to('.skip',
-  {opacity:0},"-=5"
-  )
-  introTl.from('.atoms', {
-    duration:125,
-    opacity:0,
-    scale:0,
-    
-  })
-  introTl.from('.meditate', {
-    opacity:0,
-    scale:0,
-    duration:125,
-    
-  }, "-=1")
-  introTl.from('.large-atom', {
-    opacity:0,
-    scale:0,
-    duration:125,
-    
-  })
-  introTl.from('.atoms', 
-    {xPercent:6,
-    duration:15,
-    ease:"bounce",
-  })
-  introTl.from('.meditate', 
-    {xPercent:2,
-    duration:15,
-    ease:"bounce",
-  }, "<")
-introTl.to(".meditate-wrapper",
-      {backgroundColor: "transparent"}
-    );
-introTl.to(".meditate-section",
-      {opacity: 0.5,}
-    );
-introTl.to(".moon-section",
-      {opacity: 0.5}
-    , "<");
-introTl.to(".meditate-section",
-      { duration: 120.0,yPercent: -100}
-    );
-introTl.from('.full-moon-text1', {
-    yPercent:50, duration:120
-  },"<")  
-introTl.to(".meditate-section",
-      { duration: 120.0,opacity: 0, visibility:"hidden"}
-    );
-
-//MOON SECTION
-
- introTl.to(".moon-section",
-      { duration: 120.0,opacity: 1}
-    , "<");
-    
-  introTl.from('.full-moon1', 
-  {duration:125, delay:50, opacity:0})
-  introTl.to('.moon-text-one', 
-  {yPercent:-100, duration:125})
-  introTl.to('.large-moon', {
-    background: "radial-gradient(circle at 50% 50%, rgb(24, 19, 39) 53%, rgb(103, 82, 167) 100%, rgb(160, 128, 255))", 
-    duration:125
-  },"<2")
-  introTl.to('.moon-text-one', 
-  {opacity:0}, "<")
-  //introTl.to('.moon-text-one', 
-  //{autoAlpha:1, duration:125}, "-=2")
-  introTl.fromTo('.full-moon-text2', {opacity:0, yPercent:100},
-  {opacity:1, yPercent:0, duration:125}, "<")
-  introTl.fromTo('.full-moon2', {opacity:0},{opacity:1}, "<")
-  introTl.to('.moon-text-two',
-  {yPercent:-100, duration:400})
-  introTl.to('.moon-text-two',
-  {opacity:0})
-  introTl.to('.moon-section',
-  {opacity:0.5, duration: 125})
-  introTl.to('.today-section',
-  {opacity:0.5, duration: 125})
-  introTl.from('.side-circle', {opacity:0}, "<")
-  introTl.to('.moon-section',
-  {opacity:0, visibility: "hidden"});
-  introTl.from( '.inner-sphere' ,{ 
-    rotation: "90_cw", duration:125 });
-  introTl.from('.today-text-wrapper', {opacity:0, duration:125})
-  introTl.from('.today-text', {opacity:0},"<5")
-  introTl.to('.today-text', {yPercent: -150, duration:125})
-  introTl.fromTo('.tomorrow-text', {opacity:0, yPercent: 100},{opacity:1, duration:125})
-  introTl.to('.today-text', {opacity:0, visibility: "hidden"}, "<")
-  introTl.to( '.inner-sphere' ,{ 
-    rotation: "270_ccw", duration:125 }, "<");
-  introTl.fromTo('.tomorrow', {opacity:0},{opacity:1, duration:60}, "<")
-  introTl.fromTo('.today', {opacity:1},{opacity:0, duration:60})
-  introTl.fromTo('.tomorrow-text', {yPercent:100},{yPercent: -100})
-  // introTl.to('.tomorrow-text', {opacity:0, visibility: "hidden"})
-  introTl.to('.side-circle', {
-    backgroundColor: "transparent",
-    boxShadow: "0 0 0 0 transparent"
-  })
-  introTl.to('.today-section-wrap', {backgroundColor: "transparent"})
-  introTl.to('.today-section-wrap', {yPercent: -100, duration:120})
-  introTl.to('.today-section', {opacity: 0, duration:60}, "<60")
-  introTl.to('.today-section', {visibility: "hidden", duration:30})
-  // introTl.to('.rotate-tomorrow', {xPercent: 200, duration:120}, "<")
-  // introTl.to('.story-wrapper, .rotate-tomorrow', {opacity:0, duration:60})
-  introTl.to('.globe-section', {opacity: 1, duration:60}, "<60")
-  // introTl.to('.globe-section', {visibility: "hidden", duration:30})
-  introTl.from('.globe', {
-    scale: 0,
-    yPercent:-120,
-    duration: 120
-    })
-  globeTurn = gsap.fromTo('.globe', {
+  init();
+  
+  function namePage(pg, col='') {
+    let sections = document.querySelector(pg)
+    let thePage = sections.dataset.page;
+    let colorOrder, newIndex;
+    if(thePage == undefined){
+      pageTitle.innerHTML = ''
+    }else{
+      pageTitle.innerHTML = thePage
+    }
+    //reset color array
+    if(col==''){
+      colorOrder = [...colorPatch]
+    }else{
+      newIndex = colorPatch.indexOf(col)
+      colorOrder = [...colorPatch.slice(newIndex), ...colorPatch.slice(0, newIndex)]
+    }
+    //rotate menu
+    for(let i=0; i<menuList.length-1; i++) {
+      menuList[i].style.borderTopColor = colorOrder[i]
+    };
+  }
+  
+  //register gsap scroll plugin
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(TextPlugin);
+  gsap.registerPlugin(CSSPlugin);
+  
+  ScrollTrigger.defaults({
+    ease: Power1.easeOut
+  
+  });
+  
+  //PARTICLES ON SCROLL  
+  let particle_anim = gsap.timeline()
+    particle_anim.to(starGeo.vertices, {
+    y: 50,
+      ease: "power1.inOut", scrollTrigger: {    
+      trigger: ".intro-section",
+      scrub: true,
+    }})
+   
+  let points = gsap.utils.toArray(".panel-section");
+//   let height = 100 * (points.length +1 );
+  let height = 100 * points.length * 5;
+  
+  
+  
+  //INTRODUCTION ON SCROLL
+  let paras = gsap.utils.toArray('.introtext')
+  let introTl = gsap.timeline({
     scrollTrigger: {
-      trigger:".globe",
+      trigger:".container",
       start: "top top",
-      scrub: 10,//move 2s afetr scroll
-      end: "+=100%"
-    },
-  backgroundPosition: "0 0"},
-      {backgroundPosition: "830px 0",repeat:-1, duration:120})
-// introTl.add(globeTurn, "-=1")
-introTl.from('.purple-ring', {
-  scale: 0,
-  xPercent:100,
-  yPercent:-100,
-  duration: 120
- })
- introTl.from('.blue-ring', {
-  scale: 0,
-  xPercent:-100,
-  yPercent:100,
-  duration: 120
- }, "<")
- introTl.from(".globe-surround-text", {
-  duration: 120,
-  attr: { startOffset: "0%" },
-  opacity: 0,
-  // ease: "power1.inOut"
-}, "<");
-introTl.from('.left-ring-text, .right-ring-text', {
-  opacity: 0,
-})
-introTl.from('.purple-ring div, .blue-ring div', {
-  opacity: 0
-})
-//child2 count
-let newValOne = document.getElementById('globe-count-1').innerHTML;
-let newValTwo = document.getElementById('globe-count-2').innerHTML;
-var Cont={val:0}; //, NewVal = 100 ;
-
-introTl.to(Cont,{
-  duration:60,
-  val:newValOne,roundProps:"val",onUpdate:function(){
-  document.getElementById("globe-count-1").innerHTML=Cont.val
-}});
-introTl.to(Cont,{
-  duration:60,
-  val:newValTwo,roundProps:"val",onUpdate:function(){
-  document.getElementById("globe-count-2").innerHTML=Cont.val
-}}, "<1");
-//child1 count
-introTl.from('.continent', {
-  opacity: 0,
-  scale: 0,
-  duration: 120
-})
-introTl.from('.continent-text', {
-  opacity: 0,
-})
-introTl.to('.continent', {
-  xPercent:80,
-  // rotateY: 180,
-  duration: 120
-})
-introTl.to('.continent', {
-  delay: 120,
-  opacity: 0,
-  scale: 0,
-  duration: 120
-})
-introTl.to('.container', {
-  backgroundColor: "#05030c"
-})
-introTl.to('.globe-section-wrap', {
-  backgroundColor: "transparent"
-})
-introTl.to('.globe-section-wrap', {
-  yPercent: -100,
-  duration: 120,
-})
-introTl.to('.globe-section', {
-  opacity: 0, visibility:"hidden", duration:60
-})
-introTl.to('.product-section', {
-  opacity: 1, duration:60
-}, "<")
-introTl.to('.container', {
-  backgroundColor: "transparent"
-}, "<")
-
-
-// //WATCH SECTION
-
-introTl.from('#pdt1', {
-  scale: 0.7,
-  duration:360,
-  // ease: Power1.easeOut
-})
-introTl.fromTo('#actn-btn-1', {
-  opacity:0
-}, {opacity:1, x:250})
-introTl.to('#pdt1', {
-  yPercent: -20,
-  scale: 2,
-  duration:360,
-}, "<")
-
-introTl.from('.product-sphere', {
-  scale: 0,
-  duration:360,
-})
-introTl.to('#pdt1', {
-  yPercent: 0,
-  scale: 1,
-  duration:360,
-}, "<")
-
-introTl.from('.pdt-text', {
-  opacity: 0,
-  duration:120,
-})
-introTl.to('.product-section', {
-  opacity: 0,
-  visibility:"hidden",
-})
-
-// PHONE SECTION
-
-introTl.to('.phone-section', {
-  opacity: 1,
-}, "<")
-introTl.to('#actn-btn-2', {
-  x:250
-}, "<")
-introTl.to('#pdt2', {
-  yPercent:-150, duration:360,
-  scale: 0.4
-})
-introTl.from('.phone-wrap', {
-  x:-500, opacity:0, duration:120
-}, "<120")
-introTl.from('.phone-sphere', {
-  background:"none"
-}, "<1")
-
-  // //PHONE On SCROLL
-// let theCanvas = document.createElement("canvas");
-// theCanvas.setAttribute("id", "phone-div");
-//   document.getElementById("phone-div")
-const screenCanvas = document.getElementById("phone-div");
-const screenContext = screenCanvas.getContext("2d");
-screenCanvas.width = 1920;
-screenCanvas.height = 1080;
-const screenCount = 628;
-const currentScreen = index => (
-  `phones/phone and screen_${(index).toString().padStart(5, '0')}.png`
-);
-const screenImages = []
-const allScreens = {
-  frame: 0
-};
-
-for (let i = 0; i < screenCount; i++) {
-  const img = new Image();
-  img.src = currentScreen(i);
-  screenImages.push(img);
-}
-let phoneScroll = gsap.timeline({
-  scrollTrigger: {
-    trigger:".phone-section",
-    start: "top top",
-    scrub: true,//move in line with scroll
-    // pin: true
+      scrub: 2,//move 10s afetr scroll
+      pin: true,
+      end: "+=" + height + "%",
+      // pinSpacing: false,
+      //onEnter: () => namePage('.intro-section', '#5c5cf2'),
+      //onEnterBack: () => namePage('.intro-section', '#5c5cf2'),
+    }
     
-  },
-})
-phoneScroll.to(allScreens, {
-  frame: screenCount-1,
-  snap: "frame",
-  duration:60,
-  delay:120,
-  onUpdate: renderScreen
-});
-screenImages[0].onload = renderScreen;
-function renderScreen() {
-  screenContext.clearRect(0,0,screenCanvas.width, screenCanvas.height);
-  screenContext.drawImage(screenImages[allScreens.frame], 0, 0, screenImages[allScreens.frame].width,    screenImages[allScreens.frame].height,     // source rectangle
-    0, 0, screenCanvas.width, screenCanvas.height); // destination rectangle
-}
-phoneScroll.pause()
-function startScroll(){
-  phoneScroll.restart()
-}
-function pauseScroll(){
-  phoneScroll.pause()
-}
-function resumeScroll(){
-  phoneScroll.resume()
-}
+  })
+  
+  //INTRO SECTION
+  
+  introTl.to('.introtext',
+    {opacity:1, duration:0.1}
+  )
+  for(let i=0; i<paras.length; i++){
+    introTl.from(paras[i],{
+      scale:0,     
+      duration:240,
+      delay:2
+    })
+    introTl.to(paras[i],{
+        delay:120,
+       scale:0.9,
+       duration:60,
+     })
+    introTl.to(paras[i],{
+      opacity:0,
+      duration:120,
+    })
+  }
+  introTl.to(scene.background, {
+    r: tempColor.r, g: tempColor.g, b: tempColor.b }, "-=480");
+  introTl.to(".intro-section",
+        { duration: 10.0,opacity: 0.5}, "<"
+      );
+   introTl.to(".meditate-section",
+        { duration: 10.0,opacity: 1}
+      , "<");
 
-introTl.from('.phone-text', {
-  opacity:0, onComplete: startScroll
-}, "<1")
-introTl.to('.phone-sphere, .phone-pdt-wrap', {
-yPercent:-100
-})
-introTl.to('#actn-btn-2', {
-  x:0, duration:120
-}, "<")
-// introTl.to('#actn-btn-2, #acc-btn3', {
-//   x:100, duration:120
-// }, "<")
-introTl.to('.phone-section', {
-  opacity: 0.5
-})
+  //MEDITATE SECTION
+    introTl.from('.meditate-text', {yPercent: 50,
+      opacity:0.1,
+      duration:120,
+    }, "<120")
+    introTl.to(".intro-section",
+      { duration: 10.0,opacity: 0, visibility:"hidden"}, "<60"
+    );
+    introTl.to('.skip',
+    {opacity:0},"-=5"
+    )
+    introTl.from('.atoms', {
+      duration:120,
+      opacity:0,
+      scale:0,
+      
+    })
+    introTl.from('.meditate', {
+      opacity:0,
+      scale:0,
+      duration:120,
+      
+    }, "-=1")
+    introTl.from('.large-atom', {
+      opacity:0,
+      scale:0,
+      duration:120,
+      
+    })
+    introTl.from('.atoms', 
+      {xPercent:10,
+      duration:120,
+      ease:"bounce",
+    })
+    introTl.from('.meditate', 
+      {xPercent:6,
+      duration:120,
+      ease:"bounce",
+    }, "<")
+//   introTl.to(".meditate-wrapper",
+//         {backgroundColor: "transparent"}
+//       );
+  introTl.to(".meditate-section",
+        {opacity: 0.5, duration:120}
+      );
+  introTl.to(".moon-section",
+        {opacity: 0.5, duration:120}
+      , "<");
+  introTl.to(".meditate-section",
+        { duration: 120.0,yPercent: -100}
+      );
+  introTl.from('.full-moon-text1', {
+      yPercent:150, duration:120
+    },"<")  
+  introTl.to(".meditate-section",
+        { duration: 120.0,opacity: 0, visibility:"hidden"}
+      );
+  
+  //MOON SECTION
+  
+   introTl.to(".moon-section",
+        { duration: 120.0,opacity: 1}
+      , "<");
+      
+    introTl.from('.full-moon1', 
+    {duration:120, delay:50, opacity:0})
+    introTl.to('.moon-text-one', 
+    {yPercent:-100, duration:120})
+    introTl.to('.large-moon', {
+      background: "radial-gradient(circle at 50% 50%, rgb(24, 19, 39) 53%, rgb(103, 82, 167) 100%, rgb(160, 128, 255))", 
+      duration:120
+    },"<2")
+    introTl.to('.moon-text-one', 
+    {opacity:0}, "<")
+    //introTl.to('.moon-text-one', 
+    //{autoAlpha:1, duration:120}, "-=2")
+    introTl.fromTo('.full-moon-text2', {opacity:0, yPercent:100},
+    {opacity:1, yPercent:0, duration:120}, "<")
+    introTl.fromTo('.full-moon2', {opacity:0},{opacity:1}, "<")
+    introTl.to('.moon-text-two',
+    {yPercent:-100, duration:360})
+    introTl.to('.moon-text-two',
+    {opacity:0})
+    introTl.to('.moon-section',
+    {opacity:0.5, duration:120})
+    introTl.to('.today-section',
+    {opacity:0.5, duration:120})
+    introTl.from('.side-circle', {opacity:0}, "<")
+    introTl.to('.moon-section',
+    {opacity:0, visibility: "hidden"});
+    introTl.from( '.inner-sphere' ,{ 
+      rotation: "90_cw", duration:120 });
+    introTl.from('.today-text-wrapper', {opacity:0, duration:120})
+    introTl.from('.today-text', {opacity:0},"<5")
+    introTl.to('.today-text', {yPercent: -150, duration:120})
+    introTl.fromTo('.tomorrow-text', {opacity:0, yPercent: 100},{opacity:1, duration:120})
+    introTl.to('.today-text', {opacity:0, visibility: "hidden"}, "<")
+    introTl.to( '.inner-sphere' ,{ 
+      rotation: "270_ccw", duration:120 }, "<");
+    introTl.fromTo('.tomorrow', {opacity:0},{opacity:1}, "<")
+    introTl.fromTo('.today', {opacity:1},{opacity:0},"<")
+    introTl.fromTo('.tomorrow-text', {
+      opacity:0, yPercent:100},{
+        opacity:1, yPercent: 0, duration:120}, "<")
+    introTl.to('.tomorrow-text', {
+        yPercent: -100, duration:240})
+    // introTl.to('.tomorrow-text', {opacity:0, visibility: "hidden"})
+    introTl.to('.side-circle', {
+      backgroundColor: "transparent",
+      boxShadow: "0 0 0 0 transparent"
+    })
+    introTl.to('.today-section-wrap', {backgroundColor: "transparent"})
+    introTl.to('.today-section-wrap', {yPercent: -100, duration:120})
+    introTl.to('.today-section', {opacity: 0, duration:60}, "<60")
+    introTl.to('.today-section', {visibility: "hidden", duration:30})
+    // introTl.to('.rotate-tomorrow', {xPercent: 200, duration:120}, "<")
+    // introTl.to('.story-wrapper, .rotate-tomorrow', {opacity:0, duration:60})
+    introTl.to('.globe-section', {opacity: 1, duration:60}, "<60")
+    // introTl.to('.globe-section', {visibility: "hidden", duration:30})
+    introTl.from('.globe', {
+      scale: 0,
+      yPercent:-120,
+      duration: 120
+      })
+    globeTurn = gsap.fromTo('.globe', {
+      scrollTrigger: {
+        trigger:".globe",
+        start: "top top",
+        scrub: 10,//move 2s afetr scroll
+        end: "+=100%"
+      },
+    backgroundPosition: "0 0"},
+        {backgroundPosition: "830px 0",repeat:-1, duration:120})
+  // introTl.add(globeTurn, "-=1")
+  introTl.from('.purple-ring', {
+    scale: 0,
+    xPercent:100,
+    yPercent:-100,
+    duration: 120
+   })
+   introTl.from('.blue-ring', {
+    scale: 0,
+    xPercent:-100,
+    yPercent:100,
+    duration: 120
+   }, "<")
+   introTl.from(".globe-surround-text", {
+    duration: 120,
+    attr: { startOffset: "0%" },
+    opacity: 0,
+    // ease: "power1.inOut"
+  }, "<");
+  introTl.from('.left-ring-text, .right-ring-text', {
+    opacity: 0,
+  })
+  introTl.from('.purple-ring div, .blue-ring div', {
+    opacity: 0
+  })
+  //child2 count
+  let newValOne = document.getElementById('globe-count-1').innerHTML;
+  let newValTwo = document.getElementById('globe-count-2').innerHTML;
+  var Cont={val:0}; //, NewVal = 100 ;
+  
+  introTl.to(Cont,{
+    duration:60,
+    val:newValOne,roundProps:"val",onUpdate:function(){
+    document.getElementById("globe-count-1").innerHTML=Cont.val
+  }});
+  introTl.to(Cont,{
+    duration:60,
+    val:newValTwo,roundProps:"val",onUpdate:function(){
+    document.getElementById("globe-count-2").innerHTML=Cont.val
+  }}, "<1");
+  //child1 count
+  introTl.from('.continent', {
+    opacity: 0,
+    scale: 0,
+    duration: 120
+  })
+  introTl.from('.continent-text', {
+    opacity: 0,
+  })
+  introTl.to('.continent', {
+    xPercent:80,
+    // rotateY: 180,
+    duration: 120
+  })
+  introTl.to('.continent', {
+    delay: 120,
+    opacity: 0,
+    scale: 0,
+    duration: 120
+  })
+  introTl.to('.container', {
+    backgroundColor: "#05030c"
+  })
+  introTl.to('.globe-section-wrap', {
+    backgroundColor: "transparent"
+  })
+  introTl.to('.globe-section-wrap', {
+    yPercent: -100,
+    duration: 120,
+  })
+  introTl.to('.globe-section', {
+    opacity: 0, visibility:"hidden", duration:60
+  })
+  introTl.to('.product-section', {
+    opacity: 1, duration:60
+  }, "<")
+  introTl.to('.container', {
+    backgroundColor: "transparent"
+  }, "<")
+  
+  
+  // //WATCH SECTION
+  
+  introTl.from('#pdt1', {
+    scale: 0.7,
+    duration:360,
+    // ease: Power1.easeOut
+  })
+  introTl.fromTo('#actn-btn-1', {
+    opacity:0
+  }, {opacity:1, x:250})
+  introTl.to('#pdt1', {
+    yPercent: -20,
+    scale: 2,
+    duration:360,
+  }, "<")
+  
+  introTl.from('.product-sphere', {
+    scale: 0,
+    duration:360,
+  })
+  introTl.to('#pdt1', {
+    yPercent: 0,
+    scale: 1,
+    duration:360,
+  }, "<")
+  
+  introTl.from('.pdt-text', {
+    opacity: 0,
+    duration:240,
+  })
+  introTl.to('.product-section', {
+      delay:120,
+    opacity: 0,
+    visibility:"hidden",
+  })
+  
+  // PHONE SECTION
+  
+  introTl.to('.phone-section', {
+    opacity: 1,
+  }, "<")
+  introTl.to('#actn-btn-2', {
+    x:250
+  }, "<")
+  introTl.to('#pdt2', {
+    yPercent:-150, duration:360,
+    scale: 0.4
+  })
+  introTl.from('.phone-wrap', {
+    x:-500, opacity:0, duration:120
+  }, "<120")
+  introTl.from('.phone-sphere', {
+    background:"none"
+  }, "<1")
+  
+  
+  introTl.from('.phone-text', {
+    opacity:0, //onComplete: startScroll
+  }, "<1")
+      // //PHONE On SCROLL
+  // let theCanvas = document.createElement("canvas");
+  // theCanvas.setAttribute("id", "phone-div");
+  //   document.getElementById("phone-div")
+  const screenCanvas = document.getElementById("phone-div");
+  const screenContext = screenCanvas.getContext("2d");
+  screenCanvas.width = 1920;
+  screenCanvas.height = 1080;
+  const screenCount = 628;
+  const currentScreen = index => (
+    `phones/phone and screen_${(index).toString().padStart(5, '0')}.png`
+  );
+  const screenImages = []
+  const allScreens = {
+    frame: 0
+  };
 
-//SIGNUP SECTION
-introTl.to('#form-section', {
-  opacity: 0.5
-}, "<")
-introTl.from('#actn-btn-3', {
-  opacity:0
-}, "<")
-introTl.from('.form-product', {
-  scale: 0, duration:120
-})
-introTl.to('.phone-section', {
-  opacity: 0,
-  visibility:"hidden"
-})
-introTl.to('#form-section', {
-  opacity: 1
-}, "<")
-introTl.from('.action-form', {
-  opacity:0
-})
+  for (let i = 0; i < screenCount; i++) {
+    const img = new Image();
+    img.src = currentScreen(i);
+    screenImages.push(img);
+  }
+
+  // let phoneScroll = gsap.timeline({
+  //   scrollTrigger: {
+  //     trigger:".container",
+  //     // start: "top top",
+  //     scrub: true,//move in line with scroll
+  //     // pin: true
+      
+  //   },
+  // })
+  introTl.to(allScreens, {
+    frame: screenCount-1,
+    snap: "frame",
+    duration:720,
+    delay:10,
+    onUpdate: renderScreen
+  });
+  screenImages[0].onload = renderScreen;
+  function renderScreen() {
+    screenContext.clearRect(0,0,screenCanvas.width, screenCanvas.height);
+    screenContext.drawImage(screenImages[allScreens.frame], 0, 0, screenImages[allScreens.frame].width,    screenImages[allScreens.frame].height,     // source rectangle
+      0, 0, screenCanvas.width, screenCanvas.height); // destination rectangle
+  }
+  // phoneScroll.pause()
+  // function startScroll(){
+  //   phoneScroll.restart()
+  // }
+  // function pauseScroll(){
+  //   phoneScroll.pause()
+  // }
+  // function resumeScroll(){
+  //   phoneScroll.resume()
+  // }
+
+  introTl.to('.phone-sphere, .phone-pdt-wrap', {
+  yPercent:-100
+  })
+  introTl.to('#actn-btn-2', {
+    x:0, duration:120
+  }, "<")
+  // introTl.to('#actn-btn-2, #acc-btn3', {
+  //   x:100, duration:120
+  // }, "<")
+  introTl.to('.phone-section', {
+    opacity: 0.5
+  })
+  
+  //SIGNUP SECTION
+  introTl.to('#form-section', {
+    opacity: 0.5
+  }, "<")
+  introTl.from('#actn-btn-3', {
+    opacity:0
+  }, "<")
+  introTl.from('.form-product', {
+    scale: 0, duration:120
+  })
+  introTl.to('.phone-section', {
+    opacity: 0,
+    visibility:"hidden"
+  })
+  introTl.to('#form-section', {
+    opacity: 1, duration:120
+  }, "<")
+  introTl.from('.action-form', {
+    opacity:0, duration:240
+  })
+  
+  
+  
+//   ScrollTrigger.matchMedia({  
+//     // desktop
+//     "(min-width: 800px)": function() {
+//       // setup animations and ScrollTriggers for screens 800px wide or greater (desktop) here...
+//       // These ScrollTriggers will be reverted/killed when the media query doesn't match anymore.
+
+//       ScrollTrigger.create({
+//         trigger: elem,
+//         onEnter: function() { animateFrom(elem) }, 
+//         onEnterBack: function() { animateFrom(elem, -1) },
+//         onLeave: function() { hide(elem) } // assure that the element is hidden when scrolled into view
+//       });
+
+//     },
+
+//     // mobile
+//     "(max-width: 799px)": function() {
+//       // The ScrollTriggers created inside these functions are segregated and get
+//       // reverted/killed when the media query doesn't match anymore. 
+
+//       ScrollTrigger.saveStyles(".gs_reveal_fromLeft, .gs_reveal_fromRight, .gs_reveal");
+
+//       // return function() {
+//       //   gsap.kill(); 
+//       //   other cleanup code can go here. 
+//       // };
 
 
+//     },
+
+//     // all 
+//     "all": function() {
+//       // ScrollTriggers created here aren't associated with a particular media query,
+//       // so they persist.
+//     }
+
+//   });
+  
 
 
+  
 
-</script>
+  </script>
